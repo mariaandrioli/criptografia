@@ -1,8 +1,9 @@
 import sys
 import os.path
+import os
 import math
 import random
-from PIL import Image
+from PIL import Image, ImageChops
 
 MAX_SIZE_MSG = 255
 BITS_IN_BYTE = 8
@@ -24,6 +25,8 @@ def make_image(lista, size, name):
     image = Image.new('RGB', size)
     image.putdata(lista)
     image.save(name)
+
+    return image
 
 def usage():
     print("Execução: python [-e/-d] img1")
@@ -119,7 +122,13 @@ def encode(imgName):
 
     imgdata = iter(result)
     tupled = [*zip(imgdata, imgdata, imgdata)]
-    make_image(tupled, img.size, "encoded.png")
+    encoded = make_image(tupled, img.size, "encoded.png")
+    diff(imgName, "encoded.png", img, encoded)
+
+def diff(ogName, encName, og, encoded):
+    print("Tamanho imagem original:", os.stat(ogName).st_size, "\nTamanho imagem modificada:", os.stat(encName).st_size)
+    difference = ImageChops.difference(og, encoded)
+    print("Histograma da diferença pixel por pixel entre as imagens:", difference.histogram())
 
 def main(imgName, operation):
     try:
