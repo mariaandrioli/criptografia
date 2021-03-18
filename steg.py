@@ -17,13 +17,21 @@ def encode(imgName):
 
     binario = ''.join(format(ord(x), 'b') for x in msg)
 
-    print(msg, binario)
+    # print(msg, binario)
     img = Image.open(imgName, 'r')
-
-    data = ''
     imgdata = iter(img.getdata())
 
-    print(list(img.getdata()))
+    for i in imgdata:
+        print(i)
+        
+
+    # for i in range(len(binario)):
+    #     if binario[i] == 0:
+
+    #     if binario[i] == 1:
+
+
+    # print(list(img.getdata()))
 
 def main(imgName, operation):
     try:
