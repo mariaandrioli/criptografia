@@ -48,9 +48,6 @@ def decode(imgName):
     start = ''
     max = len(result) - needed_bytes(img.size)*BITS_IN_BYTE
 
-    # for i in range(len(result)):
-    #     print(i, result[i])
-
     for i in range(max, len(result)):
         if result[i] % 2 == 0:
             start = start + '0'
@@ -68,10 +65,6 @@ def decode(imgName):
 
     n = ''.join([chr(int(msg[i:i+8],2)) for i in range(0,len(msg),8)])
     print("Mensagem secreta:", n)
-
-    # imgdata = iter(result)
-    # tupled = [*zip(imgdata, imgdata, imgdata)]
-    # make_image(tupled, img.size, "encoded.png")
 
 def encode(imgName):
     msg = input('Mensagem secreta: ')
@@ -106,7 +99,6 @@ def encode(imgName):
     start_binario = bin(start)[2:]
     start_b_string = '0'*needed_bytes(img.size)*BITS_IN_BYTE + start_binario
     start_b_string = start_b_string[len(start_binario):]
-    print(start)
 
     max = max_start(img.size, len(msg), len(result)) + (len(msg)*BITS_IN_BYTE)
     for i in range(len(start_b_string)):

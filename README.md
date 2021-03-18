@@ -18,7 +18,7 @@ pip3 install -r requirements.txt
 #### Execução
 
 ```
-python3 [-e/-d] img.png
+python3 steg.py [-e/-d] img.png
 ```
 
 ### Autoria
