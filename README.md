@@ -7,6 +7,19 @@ UFPR Ciência da Computação 2021 - ERE
 ### Esteganografia
 
 - Implementação de uma forma de esteganografia na computação.
+- Ideia: Técnica LSB, sendo que os primeiros X bytes da imagem codificada tem o tamanho da mensagem, e os últimos X bits da imagem tem o byte (aleatório) que a mensagem começa.
+
+#### Instalação de bibliotecas
+
+```
+pip3 install -r requirements.txt
+```
+
+#### Execução
+
+```
+python3 [-e/-d] img.png
+```
 
 ### Autoria
 

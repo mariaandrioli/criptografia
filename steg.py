@@ -2,6 +2,11 @@ import sys
 import os.path
 from PIL import Image
 
+def make_image(lista, size, name):
+    image = Image.new('RGB', size)
+    image.putdata(lista)
+    image.save(name)
+
 def usage():
     print("Execução: python [-e/-d] img1")
 
@@ -11,27 +16,33 @@ def decode(imgName):
 
 def encode(imgName):
     msg = input('Mensagem secreta: ')
+    img = Image.open(imgName, 'r')
 
     if len(msg) == 0:
         raise ValueError('Mensagem vazia')
+    if len(msg) > img.size[0]*img.size[1]:
+        raise ValueError('Mensagem muito grande')
 
-    binario = ''.join(format(ord(x), 'b') for x in msg)
+    binario = ''.join(bin(x)[2:].zfill(8) for x in msg.encode('UTF-8'))
 
-    # print(msg, binario)
-    img = Image.open(imgName, 'r')
-    imgdata = iter(img.getdata())
+    result = [] 
+    
+    for t in img.getdata(): 
+        for x in t: 
+            result.append(x) 
 
-    for i in imgdata:
-        print(i)
-        
+    for i in range(len(binario)):
+        if binario[i] == '0':
+            if result[i] % 2 != 0:
+                result[i] = result[i] - 1
+        if binario[i] == '1':
+            if result[i] % 2 == 0:
+                result[i] = result[i] - 1
 
-    # for i in range(len(binario)):
-    #     if binario[i] == 0:
 
-    #     if binario[i] == 1:
-
-
-    # print(list(img.getdata()))
+    imgdata = iter(result)
+    tupled = [*zip(imgdata, imgdata, imgdata)]
+    make_image(tupled, img.size, "encoded.png")
 
 def main(imgName, operation):
     try:
