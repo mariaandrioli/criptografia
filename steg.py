@@ -1,12 +1,24 @@
 import sys
 import os.path
 import math
+import random
 from PIL import Image
 
 MAX_SIZE_MSG = 255
+BITS_IN_BYTE = 8
 
 def needed_bytes(size):
-    return math.ceil(math.log(size[0]*size[1]))
+    return math.ceil(math.log(size[0]*size[1], 2)/8)
+
+def max_start(size, tam, result):
+    qtd = needed_bytes(size)*BITS_IN_BYTE
+    total = result - qtd - (tam*BITS_IN_BYTE)
+    return total
+
+def get_start(size, tam, result):
+    total = max_start(size,tam, result)
+    rand = random.randint(8, total)
+    return rand
 
 def make_image(lista, size, name):
     image = Image.new('RGB', size)
@@ -25,19 +37,30 @@ def decode(imgName):
         for x in t: 
             result.append(x) 
 
-    # print(result)
-
     tam = ''
     for i in range(8):
         if result[i] % 2 == 0:
             tam = tam + '0'
         else:
             tam = tam + '1'
-
     tam = int(tam, 2)
+
+    start = ''
+    max = len(result) - needed_bytes(img.size)*BITS_IN_BYTE
+
+    # for i in range(len(result)):
+    #     print(i, result[i])
+
+    for i in range(max, len(result)):
+        if result[i] % 2 == 0:
+            start = start + '0'
+        else:
+            start = start + '1'
+    start = int(start, 2)
+
     msg = ''
 
-    for i in range(8,tam*8+8):
+    for i in range(start,tam*BITS_IN_BYTE+start):
         if result[i] % 2 == 0:
             msg = msg + '0'
         else:
@@ -53,9 +76,6 @@ def decode(imgName):
 def encode(imgName):
     msg = input('Mensagem secreta: ')
     img = Image.open(imgName, 'r')
-
-    # for i in img.getdata():
-    #     print(i)
 
     if len(msg) == 0:
         raise ValueError('Mensagem vazia')
@@ -82,14 +102,28 @@ def encode(imgName):
             if result[i] % 2 == 0:
                 result[i] = result[i] - 1
 
+    start = get_start(img.size, len(msg), len(result))
+    start_binario = bin(start)[2:]
+    start_b_string = '0'*needed_bytes(img.size)*BITS_IN_BYTE + start_binario
+    start_b_string = start_b_string[len(start_binario):]
+    print(start)
+
+    max = max_start(img.size, len(msg), len(result)) + (len(msg)*BITS_IN_BYTE)
+    for i in range(len(start_b_string)):
+        if start_b_string[i] == '0':
+            if result[max+i] % 2 != 0:
+                result[max+i] = result[max+i] - 1
+        if start_b_string[i] == '1':
+            if result[max+i] % 2 == 0:
+                result[max+i] = result[max+i] - 1
+
     for i in range(len(binario)):
         if binario[i] == '0':
-            if result[i+8] % 2 != 0:
-                result[i+8] = result[i+8] - 1
+            if result[start+i] % 2 != 0:
+                result[start+i] = result[start+i] - 1
         if binario[i] == '1':
-            if result[i+8] % 2 == 0:
-                result[i+8] = result[i+8] - 1
-
+            if result[start+i] % 2 == 0:
+                result[start+i] = result[start+i] - 1
 
     imgdata = iter(result)
     tupled = [*zip(imgdata, imgdata, imgdata)]
